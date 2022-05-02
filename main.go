@@ -3,11 +3,18 @@ package main
 import (
 	"fmt"
 	"github.com/fogleman/gg"
+	"image"
 	"math"
 	"math/rand"
 	"os"
 	"sync"
 )
+
+var TARGET image.Image
+
+func init() {
+	TARGET, _ = gg.LoadImage("images/darwin.png")
+}
 
 type Individual struct {
 	elements []Polygon
@@ -79,6 +86,11 @@ func run(population []Individual, generations int) {
 
 		population = TournSel(offspring, len(population), 16)
 		best := BestSel(population)
+		img := DrawSolution(best.elements)
+		err := img.SavePNG("solution.png")
+		if err != nil {
+			return
+		}
 		fmt.Printf("%d\t%f\t%d\n", i, best.fitness, len(best.elements))
 
 	}
@@ -127,20 +139,24 @@ func varOr(population []Individual, lambda int, cxpb float64, mutpb float64) []I
 	return offspring
 }
 
+func uint8NoOverflow(i int) uint8 {
+	return uint8(math.Max(0, math.Min(float64(i), math.MaxUint8)))
+}
+
 func mutate(solution []Polygon) []Polygon {
 	// Mutate color
 	if rand.Float64() < 0.4 {
 		choice := &solution[rand.Intn(len(solution))]
-		choice.color.r += uint8(rand.Intn(30) - 15)
-		choice.color.g += uint8(rand.Intn(30) - 15)
-		choice.color.b += uint8(rand.Intn(30) - 15)
+		choice.color.r += uint8NoOverflow(rand.Intn(30) - 15)
+		choice.color.g += uint8NoOverflow(rand.Intn(30) - 15)
+		choice.color.b += uint8NoOverflow(rand.Intn(30) - 15)
 
 	}
 
 	// Mutate transparency
 	if rand.Float64() < 0.5 {
 		choice := &solution[rand.Intn(len(solution))]
-		choice.color.a += uint8(rand.Intn(30) - 15)
+		choice.color.a += uint8NoOverflow(rand.Intn(60) - 30)
 	}
 
 	// Add polygon
@@ -150,14 +166,68 @@ func mutate(solution []Polygon) []Polygon {
 		}
 	}
 
+	// Remove polygon
+	if rand.Float64() < 0.2 {
+		if len(solution) > 100/5 {
+			idx := rand.Intn(len(solution))
+			solution = append(solution[:idx], solution[idx+1:]...)
+		}
+	}
+
+	//// Add point to polygon
+	//if rand.Float64() < 0.2 {
+	//	diff := 100
+	//	choice := &solution[rand.Intn(len(solution))]
+	//	center := choice.GetCenter()
+	//	x := center.x + float64(rand.Intn(diff*2)-diff)
+	//	y := center.y + float64(rand.Intn(diff*2)-diff)
+	//	choice.AddPoint(Point{x, y})
+	//}
+
+	// Re-order polygons
+	if rand.Float64() < 0.3 {
+		rand.Shuffle(len(solution), func(i, j int) { solution[i], solution[j] = solution[j], solution[i] })
+	}
+
+	//// Mutate individual points
+	//if rand.Float64() < 0.3 {
+	//	choice := &solution[rand.Intn(len(solution))]
+	//	i := rand.Intn(len(choice.vertices))
+	//	if rand.Float64() < 0.4 {
+	//		x := 5 * rand.NormFloat64()
+	//		choice.vertices[i].x += x
+	//		choice.vertices[i].x = math.Max(0, math.Min(choice.vertices[i].x, float64(TARGET.Bounds().Max.X)))
+	//
+	//	}
+	//	if rand.Float64() < 0.4 {
+	//		y := 10 * rand.NormFloat64()
+	//		choice.vertices[i].y += y
+	//		choice.vertices[i].y = math.Max(0, math.Min(choice.vertices[i].y, float64(TARGET.Bounds().Max.Y)))
+	//	}
+	//}
+
+	//// Mutate all points
+	//if rand.Float64() < 0.1 {
+	//	choice := &solution[rand.Intn(len(solution))]
+	//	for i := 0; i < len(choice.vertices); i++ {
+	//		if rand.Float64() < 0.4 {
+	//			x := 10 * rand.NormFloat64()
+	//			choice.vertices[i].x = x
+	//		}
+	//		if rand.Float64() < 0.4 {
+	//			y := 10 * rand.NormFloat64()
+	//			choice.vertices[i].y = y
+	//		}
+	//	}
+	//}
+
 	return solution
 }
 
 func evaluate(solution []Polygon) float64 {
-	target, _ := gg.LoadImage("images/darwin.png")
-	image := DrawSolution(solution)
-	diff := ImageDifference(image.Image(), target)
-	MAX := float64(math.MaxUint16 * image.Height() * image.Width())
+	img := DrawSolution(solution)
+	diff := ImageDifference(img.Image(), TARGET)
+	MAX := float64(math.MaxUint16 * img.Height() * img.Width())
 	return (MAX - diff) / MAX
 
 }
@@ -165,11 +235,11 @@ func evaluate(solution []Polygon) float64 {
 func main() {
 	var individuals []Individual
 	for i := 0; i < 256; i++ {
-		individuals = append(individuals, MakeIndividual(10))
+		individuals = append(individuals, MakeIndividual(100))
 	}
 
 	DrawSolution(individuals[0].elements)
 
-	run(individuals, 1000)
+	run(individuals, 2000)
 
 }

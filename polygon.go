@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/fogleman/gg"
 	"math"
 	"math/rand"
-	"os"
 	"sort"
 )
 
@@ -50,7 +48,7 @@ func (poly Polygon) GetCenter() Point {
 
 func (poly *Polygon) removeSelfIntersect() {
 	center := poly.GetCenter()
-	sort.Slice(poly.vertices, func(i, j int) bool {
+	sort.SliceStable(poly.vertices, func(i, j int) bool {
 		baseVec := Vec2{
 			x: poly.vertices[0].x - center.x,
 			y: poly.vertices[0].y - center.y,
@@ -89,11 +87,11 @@ func DrawSolution(solution []Polygon) gg.Context {
 		context.SetRGBA255(int(poly.color.r), int(poly.color.g), int(poly.color.b), int(poly.color.a))
 		context.Fill()
 	}
-	err := context.SavePNG("solution.png")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	//err := context.SavePNG("solution.png")
+	//if err != nil {
+	//	fmt.Println(err)
+	//	os.Exit(1)
+	//}
 	return *context
 }
 
