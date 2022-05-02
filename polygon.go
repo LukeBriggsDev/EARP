@@ -76,7 +76,7 @@ func DrawSolution(solution []Polygon) gg.Context {
 	context := gg.NewContext(200, 200)
 	// Set background
 	context.DrawRectangle(0, 0, 200, 200)
-	context.SetRGBA255(0, 0, 0, 255)
+	context.SetRGBA255(35, 22, 19, 255)
 	context.Fill()
 	for _, poly := range solution {
 		for _, vertex := range poly.vertices[1:] {
