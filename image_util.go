@@ -18,7 +18,7 @@ func pixelDifference(c1 color.Color, c2 color.Color) float64 {
 
 func ImageDifference(im1 image.Image, im2 image.Image) float64 {
 	total := 0.0
-	grey := image.NewGray(image.Rect(0, 0, 200, 200))
+	grey := image.NewGray(image.Rect(0, 0, im1.Bounds().Max.X, im2.Bounds().Max.Y))
 	for y := im1.Bounds().Min.Y; y < im1.Bounds().Max.Y; y++ {
 		for x := im1.Bounds().Min.X; x < im1.Bounds().Max.X; x++ {
 			pxlDiff := pixelDifference(im1.At(x, y), im2.At(x, y))

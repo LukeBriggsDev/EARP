@@ -73,9 +73,9 @@ func angleBetweenVectors(vec1 Vec2, vec2 Vec2) float64 {
 }
 
 func drawSolution(solution []Polygon) gg.Context {
-	context := gg.NewContext(200, 200)
+	context := gg.NewContext(TARGET_WIDTH, TARGET_HEIGHT)
 	// Set background
-	context.DrawRectangle(0, 0, 200, 200)
+	context.DrawRectangle(0, 0, float64(context.Width()), float64(context.Height()))
 	context.SetRGBA255(int(BG.r), int(BG.g), int(BG.b), int(BG.a))
 	context.Fill()
 	for _, poly := range solution {

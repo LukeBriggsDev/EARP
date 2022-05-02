@@ -13,6 +13,10 @@ import (
 
 var TARGET image.Image
 var BG rgba
+var MAX_POLYGONS = 100
+var GENERERATIONS = 10000
+var TARGET_WIDTH int
+var TARGET_HEIGHT int
 
 func getMostCommonColor(image image.Image, pallete color.Palette) color.Color {
 	count := make([]int, len(pallete))
@@ -35,6 +39,8 @@ func getMostCommonColor(image image.Image, pallete color.Palette) color.Color {
 
 func init() {
 	TARGET, _ = gg.LoadImage("images/darwin.png")
+	TARGET_WIDTH = TARGET.Bounds().Max.X
+	TARGET_HEIGHT = TARGET.Bounds().Max.Y
 	q := quantize.MedianCutQuantizer{}
 	pallette := q.Quantize(make([]color.Color, 0, 16), TARGET)
 	r, g, b, a := getMostCommonColor(TARGET, pallette).RGBA()
@@ -112,14 +118,14 @@ func mutate(solution []Polygon) []Polygon {
 
 	// Add polygon
 	if rand.Float64() < 0.3 {
-		if len(solution) < 100 {
+		if len(solution) < MAX_POLYGONS {
 			solution = append(solution, makePolygon())
 		}
 	}
 
 	// Remove polygon
 	if rand.Float64() < 0.2 {
-		if len(solution) > 100/5 {
+		if len(solution) > MAX_POLYGONS/5 {
 			idx := rand.Intn(len(solution) - 1)
 			solution = append(solution[:idx], solution[idx+1:]...)
 		}
@@ -193,11 +199,11 @@ func evaluate(solution []Polygon) float64 {
 func main() {
 	var individuals []Individual
 	for i := 0; i < 256; i++ {
-		individuals = append(individuals, MakeIndividual(100))
+		individuals = append(individuals, MakeIndividual(MAX_POLYGONS))
 	}
 
 	drawSolution(individuals[0].elements)
 
-	run(individuals, 2000)
+	run(individuals, GENERERATIONS)
 
 }
