@@ -62,21 +62,21 @@ func (poly *Polygon) removeSelfIntersect() {
 			y: poly.vertices[j].y - center.y,
 		}
 
-		return AngleBetweenVectors(baseVec, vec1) < AngleBetweenVectors(baseVec, vec2)
+		return angleBetweenVectors(baseVec, vec1) < angleBetweenVectors(baseVec, vec2)
 
 	})
 }
 
-func AngleBetweenVectors(vec1 Vec2, vec2 Vec2) float64 {
+func angleBetweenVectors(vec1 Vec2, vec2 Vec2) float64 {
 	angle := math.Atan2(vec2.y, vec2.x) - math.Atan2(vec1.y, vec1.x)
 	return angle
 }
 
-func DrawSolution(solution []Polygon) gg.Context {
+func drawSolution(solution []Polygon) gg.Context {
 	context := gg.NewContext(200, 200)
 	// Set background
 	context.DrawRectangle(0, 0, 200, 200)
-	context.SetRGBA255(35, 22, 19, 255)
+	context.SetRGBA255(int(BG.r), int(BG.g), int(BG.b), int(BG.a))
 	context.Fill()
 	for _, poly := range solution {
 		for _, vertex := range poly.vertices[1:] {
@@ -87,15 +87,10 @@ func DrawSolution(solution []Polygon) gg.Context {
 		context.SetRGBA255(int(poly.color.r), int(poly.color.g), int(poly.color.b), int(poly.color.a))
 		context.Fill()
 	}
-	//err := context.SavePNG("solution.png")
-	//if err != nil {
-	//	fmt.Println(err)
-	//	os.Exit(1)
-	//}
 	return *context
 }
 
-func MakePolygon() Polygon {
+func makePolygon() Polygon {
 	r := rand.Intn(255)
 	g := rand.Intn(255)
 	b := rand.Intn(255)
