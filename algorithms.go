@@ -42,6 +42,17 @@ func TournSel(individuals []Individual, k int, tournsize int) []Individual {
 	return chosen
 }
 
+func clonePolygonSlice(ind *[]Polygon) []Polygon {
+	newInd := make([]Polygon, len(*ind))
+	for idx, elem := range *ind {
+		newInd[idx].color = elem.color
+		for _, point := range elem.vertices {
+			newInd[idx].vertices = append(newInd[idx].vertices, Point{point.x, point.y})
+		}
+	}
+	return newInd
+}
+
 func varOr(population []Individual, lambda int, cxpb float64, mutpb float64) []Individual {
 	if cxpb+mutpb > 1 {
 		fmt.Println("cx and mutation probabilities must sum < 1")
@@ -58,22 +69,8 @@ func varOr(population []Individual, lambda int, cxpb float64, mutpb float64) []I
 				idx2 = rand.Intn(len(population))
 			}
 
-			ind1 := make([]Polygon, len(population[idx1].elements))
-			ind2 := make([]Polygon, len(population[idx2].elements))
-			// Copy ind1
-			for idx, elem := range population[idx1].elements {
-				ind1[idx].color = elem.color
-				for _, point := range elem.vertices {
-					ind1[idx].vertices = append(ind1[idx].vertices, Point{point.x, point.y})
-				}
-			}
-			// Copy ind2
-			for idx, elem := range population[idx2].elements {
-				ind2[idx].color = elem.color
-				for _, point := range elem.vertices {
-					ind2[idx].vertices = append(ind2[idx].vertices, Point{point.x, point.y})
-				}
-			}
+			ind1 := clonePolygonSlice(&population[idx1].elements)
+			ind2 := clonePolygonSlice(&population[idx2].elements)
 
 			ind1, ind2 = CxOnePoint(ind1, ind2)
 			if len(ind1) > 0 {
