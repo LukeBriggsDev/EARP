@@ -29,12 +29,12 @@ type Polygon struct {
 	vertices []Point
 }
 
-func (poly *Polygon) AddPoint(point Point) {
+func (poly *Polygon) addPoint(point Point) {
 	poly.vertices = append(poly.vertices, point)
 	poly.removeSelfIntersect()
 }
 
-func (poly Polygon) GetCenter() Point {
+func (poly Polygon) getCenter() Point {
 	centerX := 0.0
 	centerY := 0.0
 	for _, vertex := range poly.vertices {
@@ -47,7 +47,7 @@ func (poly Polygon) GetCenter() Point {
 }
 
 func (poly *Polygon) removeSelfIntersect() {
-	center := poly.GetCenter()
+	center := poly.getCenter()
 	sort.SliceStable(poly.vertices, func(i, j int) bool {
 		baseVec := Vec2{
 			x: poly.vertices[0].x - center.x,

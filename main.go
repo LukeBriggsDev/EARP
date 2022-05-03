@@ -57,7 +57,7 @@ type Individual struct {
 	fitness  float64
 }
 
-func MakeIndividual(n int) Individual {
+func makeIndividual(n int) Individual {
 	var polygons []Polygon
 	for i := 0; i < n; i++ {
 		polygons = append(polygons, makePolygon())
@@ -135,11 +135,11 @@ func mutate(solution []Polygon) []Polygon {
 	if rand.Float64() < 0.2 {
 		diff := 75
 		choice := &solution[rand.Intn(len(solution))]
-		center := choice.GetCenter()
+		center := choice.getCenter()
 		x := center.x + float64(rand.Intn(diff*2)-diff)
 		y := center.y + float64(rand.Intn(diff*2)-diff)
 
-		choice.AddPoint(Point{x, y})
+		choice.addPoint(Point{x, y})
 	}
 
 	// Re-order polygons
@@ -199,7 +199,7 @@ func evaluate(solution []Polygon) float64 {
 func main() {
 	var individuals []Individual
 	for i := 0; i < 256; i++ {
-		individuals = append(individuals, MakeIndividual(MAX_POLYGONS))
+		individuals = append(individuals, makeIndividual(MAX_POLYGONS))
 	}
 
 	drawSolution(individuals[0].elements)
