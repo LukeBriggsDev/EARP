@@ -78,28 +78,11 @@ func varOr(population []Individual, lambda int, cxpb float64, mutpb float64) []I
 			}
 
 		} else if choice < cxpb+mutpb { // apply mutation
-			idx := rand.Intn(len(population))
-			polygons := population[idx].elements
-			var ind = make([]Polygon, len(polygons))
-			// Copy ind1
-			for idx2, elem := range population[idx].elements {
-				ind[idx2].color = elem.color
-				for _, point := range elem.vertices {
-					ind[idx2].vertices = append(ind[idx2].vertices, Point{point.x, point.y})
-				}
-			}
+			ind := clonePolygonSlice(&population[rand.Intn(len(population))].elements)
 			ind = mutate(ind)
 			offspring = append(offspring, Individual{elements: ind, fitness: 0})
 		} else { // Apply reproduction
-			idx := rand.Intn(len(population))
-			polygons := population[idx].elements
-			var ind = make([]Polygon, len(polygons))
-			for idx2, elem := range population[idx].elements {
-				ind[idx2].color = elem.color
-				for _, point := range elem.vertices {
-					ind[idx2].vertices = append(ind[idx2].vertices, Point{point.x, point.y})
-				}
-			}
+			ind := clonePolygonSlice(&population[rand.Intn(len(population))].elements)
 			offspring = append(offspring, Individual{elements: ind, fitness: 0})
 		}
 
