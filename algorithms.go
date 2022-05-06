@@ -74,16 +74,17 @@ func varOr(population []Individual, lambda int, cxpb float64, mutpb float64) []I
 
 			ind1, ind2 = CxOnePoint(ind1, ind2)
 			if len(ind1) > 0 {
-				offspring = append(offspring, Individual{elements: ind1, fitness: 0})
+				offspring = append(offspring, Individual{elements: ind1, fitness: -1})
 			}
 
 		} else if choice < cxpb+mutpb { // apply mutation
 			ind := clonePolygonSlice(&population[rand.Intn(len(population))].elements)
 			ind = mutate(ind)
-			offspring = append(offspring, Individual{elements: ind, fitness: 0})
+			offspring = append(offspring, Individual{elements: ind, fitness: -1})
 		} else { // Apply reproduction
-			ind := clonePolygonSlice(&population[rand.Intn(len(population))].elements)
-			offspring = append(offspring, Individual{elements: ind, fitness: 0})
+			idx := rand.Intn(len(population))
+			ind := clonePolygonSlice(&population[idx].elements)
+			offspring = append(offspring, Individual{elements: ind, fitness: population[idx].fitness})
 		}
 
 	}

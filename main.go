@@ -14,7 +14,7 @@ import (
 var TARGET image.Image
 var BG rgba
 var MAX_POLYGONS = 100
-var GENERERATIONS = 10000
+var GENERERATIONS = 20000
 var TARGET_WIDTH int
 var TARGET_HEIGHT int
 
@@ -64,7 +64,7 @@ func makeIndividual(n int) Individual {
 	}
 	ind := Individual{
 		elements: polygons,
-		fitness:  0,
+		fitness:  -1,
 	}
 	return ind
 }
@@ -75,12 +75,14 @@ func run(population []Individual, generations int) {
 
 		var waitGroup sync.WaitGroup
 		for i := 0; i < len(offspring); i++ {
-			waitGroup.Add(1)
-			i := i
-			go func() {
-				defer waitGroup.Done()
-				offspring[i].fitness = evaluate(offspring[i].elements)
-			}()
+			if offspring[i].fitness == -1 {
+				waitGroup.Add(1)
+				i := i
+				go func() {
+					defer waitGroup.Done()
+					offspring[i].fitness = evaluate(offspring[i].elements)
+				}()
+			}
 		}
 		waitGroup.Wait()
 
