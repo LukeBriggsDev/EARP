@@ -1,4 +1,4 @@
-module EARP
+module earp
 
 go 1.18
 

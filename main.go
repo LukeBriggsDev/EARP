@@ -8,13 +8,17 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"os"
+	"strconv"
 	"sync"
 )
 
 var TARGET image.Image
 var BG rgba
-var MAX_POLYGONS = 100
-var GENERERATIONS = 20000
+var MAX_POLYGONS int
+var GENERERATIONS int
+var IMAGE_PATH string
+
 var TARGET_WIDTH int
 var TARGET_HEIGHT int
 
@@ -37,8 +41,33 @@ func getMostCommonColor(image image.Image, pallete color.Palette) color.Color {
 	return pallete[bestIdx]
 }
 
+func printUsage() {
+	fmt.Println("Usage: EARP target_image no_of_polygons no_of_gens")
+	os.Exit(0)
+}
+
 func init() {
-	TARGET, _ = gg.LoadImage("images/darwin.png")
+	if len(os.Args) < 4 {
+		printUsage()
+	}
+	IMAGE_PATH = os.Args[1]
+	polygons, polyErr := strconv.Atoi(os.Args[2])
+	gens, gensErr := strconv.Atoi(os.Args[3])
+
+	if polyErr != nil {
+		fmt.Println("Incorrect argument for polygon count")
+		printUsage()
+	}
+
+	if gensErr != nil {
+		fmt.Println("Incorrect argument for generation count")
+		printUsage()
+	}
+
+	MAX_POLYGONS = polygons
+	GENERERATIONS = gens
+
+	TARGET, _ = gg.LoadImage(IMAGE_PATH)
 	TARGET_WIDTH = TARGET.Bounds().Max.X
 	TARGET_HEIGHT = TARGET.Bounds().Max.Y
 	q := quantize.MedianCutQuantizer{}
@@ -199,6 +228,7 @@ func evaluate(solution []Polygon) float64 {
 }
 
 func main() {
+
 	var individuals []Individual
 	for i := 0; i < 256; i++ {
 		individuals = append(individuals, makeIndividual(MAX_POLYGONS))
