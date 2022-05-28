@@ -91,15 +91,11 @@ func drawSolution(solution []Polygon) gg.Context {
 }
 
 func makePolygon() Polygon {
-	r := rand.Intn(255)
-	g := rand.Intn(255)
-	b := rand.Intn(255)
-	a := rand.Intn(255-75) + 75
 	polygon := Polygon{color: rgba{
-		r: uint8(r),
-		g: uint8(g),
-		b: uint8(b),
-		a: uint8(a),
+		r: uint8(rand.Intn(255)),
+		g: uint8(rand.Intn(255)),
+		b: uint8(rand.Intn(255)),
+		a: uint8(rand.Intn(255-75) + 75),
 	}}
 
 	sides := 3
