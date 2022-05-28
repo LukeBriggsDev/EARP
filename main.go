@@ -99,18 +99,17 @@ func makeIndividual(n int) Individual {
 }
 
 func run(population []Individual, generations int) {
-	for i := 0; i < generations; i++ {
+	for gen := 0; gen < generations; gen++ {
 		offspring := varOr(population, 120, 0.25, 0.4)
 
 		var waitGroup sync.WaitGroup
-		for i := 0; i < len(offspring); i++ {
-			if offspring[i].fitness == -1 {
+		for offIdx := 0; offIdx < len(offspring); offIdx++ {
+			if offspring[offIdx].fitness == -1 {
 				waitGroup.Add(1)
-				i := i
-				go func() {
+				go func(offIdx int) {
 					defer waitGroup.Done()
-					offspring[i].fitness = evaluate(offspring[i].elements)
-				}()
+					offspring[offIdx].fitness = evaluate(offspring[offIdx].elements)
+				}(offIdx)
 			}
 		}
 		waitGroup.Wait()
@@ -122,7 +121,7 @@ func run(population []Individual, generations int) {
 		if err != nil {
 			return
 		}
-		fmt.Printf("%d\t%f\t%d\n", i, best.fitness, len(best.elements))
+		fmt.Printf("%d\t%f\t%d\n", gen, best.fitness, len(best.elements))
 
 	}
 }
