@@ -3,8 +3,11 @@
 ![Darwin normal](images/darwin.png)
 ![Darwin earp](README/96.87.png)
 
+![Mona Lisa normal](images/monalisa.png)
+![Mona Lisa earp](README/monalisa96.65.png)
+
 EARP is a program that uses evolutionary algorithm techniques to recreate an image using a limites number of semi-transparent polygons.
-The recreation image you see above has just 100 polygons in it!.
+The recreation images you see above has just 100 polygons in it!.
 
 # Backstory
 EARP is a spin-off from a second year University project that I felt deserved a bit more than what was on the brief.
